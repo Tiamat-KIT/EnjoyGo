@@ -1,3 +1,4 @@
 .env
 tinygo_0.31.2_amd64.deb
 /dist/
+/node_modules/

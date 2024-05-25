@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./dist/wasm_exec.js"></script>
+</head>
+<body>
+    <h1>Go WebAssembly</h1>
+    <script>
+        const go = new Go()
+        go.importObject.env = {
+            "add": (x,y) => {return x + y}
+        }
+        const wasm_url = "./dist/output.wasm"
+
+        let wasm
+        if("instantinateStreaming" in WebAssembly){
+            WebAssembly.instantiateStreaming(fetch(wasm_url),go.importObject).then((get_wasm) => {
+                wasm = get_wasm.instance
+                go.run(wasm)
+            })
+        }else {
+            fetch(wasm_url).then(resp => resp.arrayBuffer())
+            .then(bytes => {
+                WebAssembly.instantiate(bytes,go.importObject).then((obj) => {
+                    wasm = obj.instance
+                    go.run(wasm)
+                })
+            })
+        }
+    </script>
+</body>
+</html>
